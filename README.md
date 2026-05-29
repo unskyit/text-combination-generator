@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌈 Infinite Text Combinator
+# Text Combination Generator ✨ 
 **RAM-Safe, Direct-to-Disk Permutation & Dictionary Generator**
 
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
