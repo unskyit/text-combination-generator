@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Parallax Text Combinator Pro - MAX CPU</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg-grad: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            --surface: #ffffff;
+            --input-bg: #f8fafc;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.15);
+            --danger: #fb7185;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --radius: 20px;
+        }
+
+        [data-theme="dark"] {
+            --bg-grad: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --surface: #1e293b;
+            --input-bg: #0f172a;
+            --primary: #818cf8;
+            --primary-hover: #6366f1;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --border: #334155;
+            --shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Quicksand', system-ui, sans-serif;
+            background: var(--bg-grad); color: var(--text);
+            font-size: 14px; line-height: 1.6; min-height: 100vh;
+            padding: 1.5rem 1rem; transition: color 0.3s, background 0.3s;
+        }
+
+        .container { max-width: 750px; margin: 0 auto; }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px; }
+        h1 { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+
+        .theme-toggle-btn {
+            background: var(--surface); border: 1px solid var(--border); color: var(--text);
+            padding: 8px 14px; border-radius: 30px; cursor: pointer; font-weight: 600;
+            display: flex; align-items: center; gap: 6px; box-shadow: var(--shadow);
+        }
+
+        .tabs { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+        .tab-btn {
+            background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+            padding: 10px 16px; border-radius: 16px; cursor: pointer; font-weight: 600;
+            flex: 1; box-shadow: var(--shadow);
+        }
+        .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 8px 20px -6px var(--primary); }
+
+        .card {
+            background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border);
+            padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1rem; display: none;
+            animation: fadeIn 0.3s forwards;
+        }
+        .card.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; font-weight: 600; margin-bottom: 0.4rem; font-size: 0.95rem; }
+        input[type="text"], input[type="number"], select {
+            width: 100%; background: var(--input-bg); border: 1px solid var(--border); color: var(--text);
+            border-radius: 14px; padding: 12px 14px; font-family: inherit; font-size: 0.95rem; outline: none;
+        }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); }
+
+        .toggle-row {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--input-bg); padding: 10px 14px; border-radius: 14px; margin-bottom: 8px; border: 1px solid var(--border); font-weight: 500;
+        }
+
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--muted); transition: .3s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 1rem; }
+        .btn { flex: 1; border: none; border-radius: 14px; padding: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+        .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--border); }
+        .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 8px 20px -6px var(--primary); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -6px var(--primary); }
+        .btn-danger { background: var(--danger); color: #fff; display: none; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .stats-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--surface); padding: 1rem 1.25rem; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 1rem;
+        }
+        .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+
+        /* Progress Bar UI */
+        .progress-container { display: none; margin-top: 1.5rem; background: var(--input-bg); padding: 1rem; border-radius: 14px; border: 1px solid var(--border); }
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+        .progress-track { width: 100%; height: 10px; background: var(--border); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: var(--primary); transition: width 0.1s linear; }
+
+        .preview-box {
+            background: var(--input-bg); border-radius: 14px; padding: 1rem; height: 180px; overflow-y: auto;
+            border: 1px solid var(--border); font-family: monospace; font-size: 0.9rem; color: var(--text); margin-top: 1rem; display: none; white-space: pre-wrap;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 10px; }
+
+        @media (max-width: 400px) {
+            body { padding: 1rem 0.5rem; font-size: 13px; }
+            .tabs, .btn-group, .stats-row { flex-direction: column; }
+            .stats-row { align-items: flex-start; gap: 10px; }
+            .stats-row > div:last-child { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Parallax MAX CPU Core</h1>
+        <button class="theme-toggle-btn" onclick="toggleTheme()">
+            <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            Theme
+        </button>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('known')">1. Known Words</button>
+        <button class="tab-btn" onclick="switchTab('blind')">2. Blind Seq</button>
+    </div>
+
+    <div class="stats-row">
+        <div>
+            <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 600;">Total Combinations</div>
+            <div class="stat-value" id="live-calc">0</div>
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 600;">Engine Status</div>
+            <div id="ram-status" style="font-weight: 700; color: var(--success); font-size: 0.9rem;">Disk Stream Ready</div>
+        </div>
+    </div>
+
+    <div id="tab-known" class="card active">
+        <div class="form-group">
+            <label>Inputs (Comma Separated)</label>
+            <input type="text" id="known-inputs" placeholder="abcd, 123, Pythagoras, leunardo" oninput="calculateEstimates()">
+        </div>
+        <div class="toggle-row" style="margin-bottom: 1rem;">
+            <span>Case Variations (abcd ➔ Abcd, aBcd)</span>
+            <label class="switch"><input type="checkbox" id="known-case" onchange="calculateEstimates()"><span class="slider"></span></label>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Combo Length</label>
+                <input type="number" id="known-length" min="1" value="2" oninput="calculateEstimates()">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Separator</label>
+                <input type="text" id="known-separator" value="" placeholder="e.g., @ or space">
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-secondary" id="btn-known-prev" onclick="startGeneration('known', true)">Preview (1000)</button>
+            <button class="btn btn-primary" id="btn-known-save" onclick="startGeneration('known', false)">Stream to Disk (Max Speed)</button>
+            <button class="btn btn-danger" id="btn-known-abort" onclick="abortWorker()">Abort Process</button>
+        </div>
+        <div class="preview-box" id="known-preview"></div>
+    </div>
+
+    <div id="tab-blind" class="card">
+        <div class="form-group">
+            <label>Sequence Length</label>
+            <input type="number" id="blind-length" min="1" max="15" value="4" oninput="calculateEstimates()">
+        </div>
+        <label>Character Sets</label>
+        <div class="toggle-row"><span>Lowercase (a-z)</span><label class="switch"><input type="checkbox" id="char-lower" checked onchange="calculateEstimates()"><span class="slider"></span></label></div>
+        <div class="toggle-row"><span>Uppercase (A-Z)</span><label class="switch"><input type="checkbox" id="char-upper" checked onchange="calculateEstimates()"><span class="slider"></span></label></div>
+        <div class="toggle-row"><span>Numbers (0-9)</span><label class="switch"><input type="checkbox" id="char-num" checked onchange="calculateEstimates()"><span class="slider"></span></label></div>
+        <div class="toggle-row"><span>Symbols (!@#)</span><label class="switch"><input type="checkbox" id="char-sym" onchange="calculateEstimates()"><span class="slider"></span></label></div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" id="btn-blind-prev" onclick="startGeneration('blind', true)">Preview (1000)</button>
+            <button class="btn btn-primary" id="btn-blind-save" onclick="startGeneration('blind', false)">Stream to Disk (Max Speed)</button>
+            <button class="btn btn-danger" id="btn-blind-abort" onclick="abortWorker()">Abort Process</button>
+        </div>
+        <div class="preview-box" id="blind-preview"></div>
+    </div>
+
+    <div class="progress-container" id="progress-ui">
+        <div class="progress-header">
+            <span id="progress-text">Generating...</span>
+            <span id="progress-percent">0%</span>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" id="progress-bar"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- UI Logic ---
+    function toggleTheme() {
+        const html = document.documentElement;
+        html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        const icon = document.getElementById('theme-icon');
+        icon.innerHTML = html.getAttribute('data-theme') === 'dark' 
+            ? `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`
+            : `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+    }
+
+    let activeTab = 'known';
+    let currentTotal = 0; // Used for progress calculations
+    let activeWorker = null;
+    let activeFileStream = null;
+
+    function switchTab(tabId) {
+        activeTab = tabId;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('tab-' + tabId).classList.add('active');
+        calculateEstimates();
+    }
+
+    // --- Math & Estimates ---
+    function factorial(n) { return (n <= 1) ? 1 : n * factorial(n - 1); }
+    function calcPermutations(n, r) { return (r > n) ? 0 : factorial(n) / factorial(n - r); }
+
+    function calculateEstimates() {
+        let total = 0;
+        if (activeTab === 'known') {
+            const items = document.getElementById('known-inputs').value.split(',').map(s => s.trim()).filter(s => s !== '');
+            const r = parseInt(document.getElementById('known-length').value) || 0;
+            if (items.length >= r && r > 0) {
+                if (document.getElementById('known-case').checked) {
+                    let avgVars = items.reduce((acc, val) => acc + Math.pow(2, val.replace(/[^a-zA-Z]/g, '').length), 0) / items.length;
+                    total = Math.floor(calcPermutations(items.length, r) * Math.pow(avgVars, r));
+                } else total = calcPermutations(items.length, r);
+            }
+        } else {
+            const length = parseInt(document.getElementById('blind-length').value) || 0;
+            let pool = 0;
+            if(document.getElementById('char-lower').checked) pool += 26;
+            if(document.getElementById('char-upper').checked) pool += 26;
+            if(document.getElementById('char-num').checked) pool += 10;
+            if(document.getElementById('char-sym').checked) pool += 32;
+            total = Math.pow(pool, length);
+        }
+        
+        currentTotal = total;
+        const display = document.getElementById('live-calc');
+        const ram = document.getElementById('ram-status');
+        
+        if (isNaN(total) || total === Infinity) {
+            display.textContent = "Astronomical";
+            ram.textContent = "Requires Disk Streaming";
+            ram.style.color = "var(--warning)";
+        } else {
+            display.textContent = total.toLocaleString();
+            ram.textContent = "Direct Disk Stream Ready";
+            ram.style.color = "var(--success)";
+        }
+    }
+
+    // --- WEB WORKER CODE (Injected as String to bypass separate files) ---
+    const workerScript = `
+        function getCaseVariants(word) {
+            let variants = [''];
+            for (let char of word) {
+                let next = [];
+                for (let v of variants) {
+                    next.push(v + char.toLowerCase());
+                    if (char.toLowerCase() !== char.toUpperCase()) next.push(v + char.toUpperCase());
+                }
+                variants = next;
+            }
+            return [...new Set(variants)];
+        }
+
+        self.onmessage = function(e) {
+            const { type, payload } = e.data;
+            const CHUNK_SIZE = 50000; // Batch outputs to avoid messaging overhead
+
+            if (type === 'start_known') {
+                const { rawItems, r, separator, doCase, isPreview, totalExpected } = payload;
+                const words = rawItems.map(w => doCase ? getCaseVariants(w) : [w]);
+                const used = new Array(words.length).fill(false);
+                let count = 0;
+                let chunk = "";
+                let lastReportTime = Date.now();
+
+                function backtrack(path) {
+                    if (path.length === r) {
+                        chunk += path.join(separator) + "\\n";
+                        count++;
+                        
+                        // Send data chunk to main thread
+                        if (count % CHUNK_SIZE === 0 || (isPreview && count === 1000)) {
+                            self.postMessage({ status: 'chunk', text: chunk, count: count });
+                            chunk = "";
+                            
+                            // Send progress %
+                            if (!isPreview && Date.now() - lastReportTime > 200) { // Throttle UI updates
+                                const percent = Math.min(99.9, (count / totalExpected) * 100).toFixed(2);
+                                self.postMessage({ status: 'progress', percent: percent, count: count });
+                                lastReportTime = Date.now();
+                            }
+                        }
+                        return;
+                    }
+                    for (let i = 0; i < words.length; i++) {
+                        if (used[i]) continue;
+                        used[i] = true;
+                        for (let variant of words[i]) {
+                            path.push(variant);
+                            backtrack(path);
+                            path.pop();
+                            if (isPreview && count >= 1000) return; // Hard stop preview
+                        }
+                        used[i] = false;
+                        if (isPreview && count >= 1000) return;
+                    }
+                }
+                backtrack([]);
+                if (chunk.length > 0) self.postMessage({ status: 'chunk', text: chunk, count: count }); // flush remaining
+                self.postMessage({ status: 'done', count: count });
+            }
+
+            if (type === 'start_blind') {
+                const { length, charset, isPreview, totalExpected } = payload;
+                const chars = charset.split('');
+                const base = chars.length;
+                const indices = new Array(length).fill(0);
+                
+                let isRunning = true;
+                let count = 0;
+                let chunk = "";
+                let lastReportTime = Date.now();
+
+                while (isRunning) {
+                    let currentStr = "";
+                    for (let i = 0; i < length; i++) currentStr += chars[indices[i]];
+                    chunk += currentStr + "\\n";
+                    count++;
+
+                    if (count % CHUNK_SIZE === 0 || (isPreview && count === 1000)) {
+                        self.postMessage({ status: 'chunk', text: chunk, count: count });
+                        chunk = "";
+                        
+                        if (!isPreview && Date.now() - lastReportTime > 200) {
+                            const percent = Math.min(99.9, (count / totalExpected) * 100).toFixed(2);
+                            self.postMessage({ status: 'progress', percent: percent, count: count });
+                            lastReportTime = Date.now();
+                        }
+                    }
+
+                    if (isPreview && count >= 1000) break;
+
+                    let pos = length - 1;
+                    while (pos >= 0) {
+                        indices[pos]++;
+                        if (indices[pos] === base) { indices[pos] = 0; pos--; }
+                        else break;
+                    }
+                    if (pos < 0) isRunning = false;
+                }
+                if (chunk.length > 0) self.postMessage({ status: 'chunk', text: chunk, count: count });
+                self.postMessage({ status: 'done', count: count });
+            }
+        };
+    `;
+
+    // --- MAIN ENGINE & STREAMING ---
+    async function startGeneration(mode, isPreview) {
+        if (!window.showSaveFilePicker && !isPreview) {
+            alert("Your browser doesn't support Direct Disk Streaming. Please use Chrome/Edge on Desktop, or use Preview mode.");
+            return;
+        }
+
+        let payload = { isPreview, totalExpected: currentTotal };
+
+        if (mode === 'known') {
+            const rawItems = document.getElementById('known-inputs').value.split(',').map(s => s.trim()).filter(s => s !== '');
+            const r = parseInt(document.getElementById('known-length').value) || 0;
+            if (rawItems.length === 0 || r > rawItems.length) return alert("Invalid inputs.");
+            
+            payload = { ...payload, rawItems, r, separator: document.getElementById('known-separator').value, doCase: document.getElementById('known-case').checked };
+        } else {
+            const length = parseInt(document.getElementById('blind-length').value) || 0;
+            let charset = "";
+            if(document.getElementById('char-lower').checked) charset += "abcdefghijklmnopqrstuvwxyz";
+            if(document.getElementById('char-upper').checked) charset += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            if(document.getElementById('char-num').checked) charset += "0123456789";
+            if(document.getElementById('char-sym').checked) charset += "!@#$%^&*()_+-=[]{}|;':\",./<>?";
+            if (charset.length === 0 || length <= 0) return alert("Invalid inputs.");
+            
+            payload = { ...payload, length, charset };
+        }
+
+        // Setup File Stream if not preview
+        if (!isPreview) {
+            try {
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: `parallax_${mode}_max.txt`,
+                    types: [{ description: 'Text File', accept: { 'text/plain': ['.txt'] } }]
+                });
+                activeFileStream = await handle.createWritable();
+            } catch (e) {
+                console.log("File picker cancelled or failed:", e);
+                return;
+            }
+        }
+
+        // Lock UI
+        toggleUIState(mode, true, isPreview);
+
+        // Boot up Web Worker
+        const blob = new Blob([workerScript], { type: 'application/javascript' });
+        activeWorker = new Worker(URL.createObjectURL(blob));
+
+        let previewBuffer = ""; // Only used for preview mode
+
+        // Listen to Worker
+        activeWorker.onmessage = async (e) => {
+            const { status, text, percent, count } = e.data;
+
+            if (status === 'chunk') {
+                if (isPreview) {
+                    previewBuffer += text;
+                } else if (activeFileStream) {
+                    await activeFileStream.write(text); // STREAM DIRECTLY TO SSD
+                }
+            } 
+            else if (status === 'progress') {
+                updateProgressBar(percent, count);
+            } 
+            else if (status === 'done') {
+                if (activeFileStream) await activeFileStream.close();
+                updateProgressBar(100, count);
+                document.getElementById('progress-text').textContent = "Complete!";
+                
+                if (isPreview) {
+                    const box = document.getElementById(`${mode}-preview`);
+                    box.style.display = 'block';
+                    box.textContent = previewBuffer || "No combinations generated.";
+                }
+                
+                terminateWorkerAndReset(mode);
+            }
+        };
+
+        // Fire the worker
+        activeWorker.postMessage({ type: `start_${mode}`, payload });
+    }
+
+    function updateProgressBar(percent, count) {
+        document.getElementById('progress-bar').style.width = `${percent}%`;
+        document.getElementById('progress-percent').textContent = `${percent}%`;
+        document.getElementById('progress-text').textContent = `Streaming to disk... (${count.toLocaleString()})`;
+    }
+
+    async function abortWorker() {
+        if (activeWorker) {
+            activeWorker.terminate();
+            if (activeFileStream) {
+                try { await activeFileStream.close(); } catch(e) {} // Force close stream
+            }
+            document.getElementById('progress-text').textContent = "ABORTED.";
+            document.getElementById('progress-bar').style.background = "var(--danger)";
+            setTimeout(() => terminateWorkerAndReset(activeTab), 2000);
+        }
+    }
+
+    function terminateWorkerAndReset(mode) {
+        if (activeWorker) { activeWorker.terminate(); activeWorker = null; }
+        activeFileStream = null;
+        toggleUIState(mode, false, false);
+    }
+
+    function toggleUIState(mode, isRunning, isPreview) {
+        const btnSave = document.getElementById(`btn-${mode}-save`);
+        const btnPrev = document.getElementById(`btn-${mode}-prev`);
+        const btnAbort = document.getElementById(`btn-${mode}-abort`);
+        const progUI = document.getElementById('progress-ui');
+        
+        btnSave.disabled = isRunning;
+        btnPrev.disabled = isRunning;
+        
+        if (isRunning) {
+            if (!isPreview) {
+                btnSave.style.display = 'none';
+                btnPrev.style.display = 'none';
+                btnAbort.style.display = 'block';
+                progUI.style.display = 'block';
+                document.getElementById('progress-bar').style.width = '0%';
+                document.getElementById('progress-bar').style.background = 'var(--primary)';
+                document.getElementById('progress-percent').textContent = '0%';
+                document.getElementById('progress-text').textContent = 'Warming up worker...';
+                document.getElementById(`${mode}-preview`).style.display = 'none';
+            } else {
+                btnPrev.textContent = "Processing...";
+            }
+        } else {
+            btnSave.style.display = 'block';
+            btnPrev.style.display = 'block';
+            btnPrev.textContent = "Preview (1000)";
+            btnAbort.style.display = 'none';
+            if (!isPreview) setTimeout(() => { progUI.style.display = 'none'; }, 3000); // Hide after a delay
+        }
+    }
+
+    calculateEstimates();
+</script>
+</body>
+</html>
